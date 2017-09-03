@@ -1,0 +1,27 @@
+我们的网站部署在Linux的服务器上，特别是web服务器，我们可能有时候做为运维人员，肯定是要查看网站的并发连接数是不是达到瓶颈等.所以在linux下，我们如何查看服务器的并发连接数呢？使用以下命令即可分组查看各种连接状态：
+
+#netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
+返回结果示例： 
+AST_ACK (正在等待处理的请求数) 
+YN_RECV 
+STABLISHED (正常数据传输状态) 
+IN_WAIT1 
+IN_WAIT2 
+IME_WAIT (处理完毕，等待超时结束的请求数)
+
+状态：描述 
+LOSED：无连接是活动的或正在进行 
+ISTEN：服务器在等待进入呼叫 
+YN_RECV：一个连接请求已经到达，等待确认 
+YN_SENT：应用已经开始，打开一个连接 
+STABLISHED：正常数据传输状态 
+IN_WAIT1：应用说它已经完成 
+IN_WAIT2：另一边已同意释放 
+TMED_WAIT：等待所有分组死掉 
+LOSING：两边同时尝试关闭 
+IME_WAIT：另一边已初始化一个释放 
+AST_ACK：等待所有分组死掉
+
+使用这上面的命令是可以查看服务器的种连接状态，其中ESTABLISHED 就是并发连接状态的显示数的了。如果你不想查看到这么多连接状态，而仅仅只是想查看并发连接数，可以简化一下命令，即：
+
+#netstat -nat|grep ESTABLISHED|wc -l 
